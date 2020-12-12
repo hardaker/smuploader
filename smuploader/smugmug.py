@@ -139,11 +139,11 @@ class SmugMug(object):
             params = {'start': start, 'count': stepsize}
             response = self.request('GET', self.smugmug_api_base_url + "/user/"+self.username+"!albums", params=params, headers={'Accept': 'application/json', 'Cache-Control': 'no-cache'})
 
-            for album in response['Response']['Album'] :
+            for album in response['Response']['Album']:
                 albums.append({"Title": album['Title'], "Uri": album["Uri"], "AlbumKey": album["AlbumKey"]})
 
             if 'NextPage' in response['Response']['Pages']:
-                start += stepsize
+                start = response['Response']['Pages']['RequestedCount'] + 1
             else:
                 break
         return albums
@@ -231,7 +231,11 @@ class SmugMug(object):
         if self.verbose == True:
             print(json.dumps(response))
 
-        return response
+        album_key = None
+        if "Response" in response and "Album" in response["Response"] and "AlbumKey" in response["Response"]["Album"]:
+            album_key = response["Response"]["Album"]["AlbumKey"]
+
+        return response, album_key
 
 
     def get_album_info(self, album_id):
