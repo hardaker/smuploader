@@ -15,7 +15,7 @@ The following python modules need to be installed:
 
 You can install the dependencies:
 
-	pip install rauth httplib2
+	pip install -r requirements.txt
 
 You can install Smuploader:
 
