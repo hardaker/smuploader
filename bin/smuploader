@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/python3
 
 from smuploader import SmugMug
 import argparse, sys, os, mimetypes
@@ -7,11 +7,11 @@ import json
 
 def upload_images(album_name, folder_name, template_name, password, resume, verbose, image_paths):
     if album_name == None:
-        print 'Error: Album name not specified.'
+        print ('Error: Album name not specified.')
         sys.exit(1)
 
     if len(image_paths) == 0:
-        print 'Error: No images specified for uploading.'
+        print ('Error: No images specified for uploading.')
         sys.exit(1)
 
     smugmug = SmugMug(verbose=verbose)
@@ -24,22 +24,22 @@ def upload_images(album_name, folder_name, template_name, password, resume, verb
         if folder_name != None:
             folder_id = smugmug.get_folder_id(folder_name)
             if folder_id == None:
-                print 'Error: Could not find folder named \'' + folder_name + '\''
+                print('Error: Could not find folder named \'' + folder_name + '\'')
                 sys.exit(1)
         # Getting template id
         template_id = None
         if template_name != None:
             template_id = smugmug.get_template_id(template_name)
             if template_id == None:
-                print 'Error: Could not find album template named \'' + template_name + '\''
+                print('Error: Could not find album template named \'' + template_name + '\'')
                 sys.exit(1)
         # Creating a new album
         response, album_id = smugmug.create_album(album_name = album_name, folder_id = folder_id, template_id = template_id, password = password)
         print('Created new album \''+album_name+'\'')
     elif album_id != None and resume == True:
-        print 'Uploading to existing album \'' + album_name + '\''
+        print('Uploading to existing album \'' + album_name + '\'')
     else:
-        print 'Error: Album already exists. Use \'--resume\' to add to existing album.'
+        print('Error: Album already exists. Use \'--resume\' to add to existing album.')
         sys.exit(1)
 
 
@@ -50,22 +50,22 @@ def upload_images(album_name, folder_name, template_name, password, resume, verb
 
     for image_path in image_paths:
         if verbose == True:
-            print '----------------------------------------------------'
+            print('----------------------------------------------------')
         count += 1
         image_name = os.path.basename(image_path)
         sys.stdout.write('Uploading ' + album_name + '/' + image_name + ' [' + str(count) + '/' + str(total) + ']... ')
         sys.stdout.flush()
         if verbose == True:
-            print ''
+            print('')
         if image_name in album_image_names:
-            print 'File already exists, skipping.'
+            print('File already exists, skipping.')
             sys.stdout.flush()
         else:
             # Loading the image data
             try:
                 image_data = open(image_path, 'rb').read()
             except IOError as e:
-                print "I/O error({0}): {1}".format(e.errno, e.strerror)
+                print("I/O error({0}): {1}".format(e.errno, e.strerror))
                 raise
         
             # Finding the mime type
@@ -75,20 +75,20 @@ def upload_images(album_name, folder_name, template_name, password, resume, verb
             result = smugmug.upload_image(image_data=image_data, image_name=image_name, image_type=image_type, album_id=album_id)
         
             if result['stat'] != 'ok':
-                print 'Error: Upload failed for file \'' + image + '\''
-                print 'Printing server response:'
-                print result
+                print('Error: Upload failed for file \'' + image + '\'')
+                print('Printing server response:')
+                print(result)
                 sys.exit(1)
-            print 'Done'
+            print('Done')
             print("Image URL: %s" % (result[u'Image'][u'URL']))
 
     # Small additional check if the number of images matches
     album_images = smugmug.get_album_images(album_id)
     if len(image_paths) != len(image_paths):
-        print 'Warning: You selected ' + str(len(args.images)) + ' images, but there are ' + str(len(existing_images)) + ' in the online album.'
+        print('Warning: You selected ' + str(len(args.images)) + ' images, but there are ' + str(len(existing_images)) + ' in the online album.')
 
 
-    print 'Album done: \''+album_name+'\''
+    print('Album done: \''+album_name+'\'')
 
 
 def list_files(dir_path):
@@ -133,7 +133,7 @@ def main(args):
                 image_paths = list_files(source)
                 album_name = os.path.basename(os.path.normpath(source))
                 upload_images(album_name = album_name, folder_name = args.folder, template_name = args.template, password = args.password, resume = args.resume, verbose = args.verbose, image_paths = image_paths)
-        print "All albums done!"
+        print("All albums done!")
             
 
 if __name__ == '__main__':
