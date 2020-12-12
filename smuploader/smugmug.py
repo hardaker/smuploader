@@ -126,16 +126,16 @@ class SmugMug(object):
         """
         albums = []
         start = 1
-        stepsize = 500
+        stepsize = 1000
         while(True):
             params = {'start': start, 'count': stepsize}
             response = self.request('GET', self.smugmug_api_base_url + "/user/"+self.username+"!albums", params=params, headers={'Accept': 'application/json'})
 
-            for album in response['Response']['Album'] :
+            for album in response['Response']['Album']:
                 albums.append({"Title": album['Title'], "Uri": album["Uri"], "AlbumKey": album["AlbumKey"]})
 
             if 'NextPage' in response['Response']['Pages']:
-                start += stepsize
+                start = response['Response']['Pages']['RequestedCount'] + 1
             else:
                 break
         return albums
